@@ -5,10 +5,11 @@ import guru.springframework.api.domain.UserData;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 
 @Service
-public class ApiServiceImpl implements ApiService {
+public class ApiServiceImpl implements  ApiService {
 
     private RestTemplate restTemplate;
 
@@ -18,7 +19,13 @@ public class ApiServiceImpl implements ApiService {
 
     @Override
     public List<User> getUsers(Integer limit) {
-        List<User> userData = restTemplate.getForObject("https://jsonplaceholder.typicode.com/users?_limit=" + limit, List.class);
-        return userData;
+
+        List<LinkedHashMap<String, Object>> apiData = restTemplate.getForObject("https://jsonplaceholder.typicode.com/users?_limit=" + limit, List.class);
+
+        UserData userData = new UserData();
+
+        userData.ingestApiUsers(apiData);
+
+        return userData.getData();
     }
 }
